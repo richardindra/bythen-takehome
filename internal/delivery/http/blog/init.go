@@ -8,7 +8,9 @@ import (
 
 type authSvc interface {
 	CreateUser(ctx context.Context, user blog.User) (blog.RespCreateUser, error)
-	DecodeJWT(ctx context.Context, authToken string) (auth.Claims, error)
+	Login(ctx context.Context, req blog.LoginRequest) (auth.LoginResponse, blog.UserInfo, error)
+
+	GetJWTDetail(authToken string) (auth.DecodeJWT, error)
 }
 
 type (

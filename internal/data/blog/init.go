@@ -22,7 +22,7 @@ type (
 const (
 	/*--- USER ---*/
 	createUser  = "CreateUser"
-	qCreateUser = `INSERT INTO m_users
+	qCreateUser = `INSERT INTO appdb.m_users
 	(
 		username, 
 		name, 
@@ -36,18 +36,31 @@ const (
 	VALUES (?, ?, ?, ?, 'A', NOW(), NOW(), NOW())`
 
 	checkUser  = "CheckUser"
-	qCheckUser = `SELECT COUNT(id) FROM m_users
+	qCheckUser = `SELECT COUNT(id) FROM appdb.m_users
 					WHERE username = ? OR email = ?`
+
+	getUserByUsername  = "GetUserByUsername"
+	qGetUserByUsername = `SELECT id, username, name, email, password_hash, status, last_login_at, created_at, updated_at
+	FROM appdb.m_users 
+	WHERE username = ?`
+
+	updateLastLogin  = "UpdateLastLogin"
+	qUpdateLastLogin = `UPDATE appdb.m_users
+	SET last_login_at = NOW()
+	WHERE username = ?`
 )
 
 var (
 	selectStmt = []statement{
 		{checkUser, qCheckUser},
+		{getUserByUsername, qGetUserByUsername},
 	}
 	insertStmt = []statement{
 		{createUser, qCreateUser},
 	}
-	updateStmt = []statement{}
+	updateStmt = []statement{
+		{updateLastLogin, qUpdateLastLogin},
+	}
 	deleteStmt = []statement{}
 )
 

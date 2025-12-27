@@ -10,7 +10,7 @@ import (
 
 type blogHandler interface {
 	CreateUser(w http.ResponseWriter, r *http.Request)
-	DecodeJWT(w http.ResponseWriter, r *http.Request)
+	Login(w http.ResponseWriter, r *http.Request)
 }
 
 // Server ...
