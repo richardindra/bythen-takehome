@@ -7,12 +7,12 @@ services:
     depends_on:
       - db
     environment:
-      DB_DSN: "root:abc123@tcp(db:3306)/blog?parseTime=true&loc=Asia%2FJakarta"
+      DB_DSN: "root:abc123@tcp(db:3306)/blog?parseTime=true"
       APP_ENV: development
 
   db:
     image: mysql:8.0
-    container_name: db
+    container_name: dbrichardindra
     environment:
       MYSQL_ROOT_PASSWORD: abc123
       MYSQL_DATABASE: blog

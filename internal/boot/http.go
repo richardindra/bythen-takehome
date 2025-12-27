@@ -15,7 +15,11 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/viper"
 
-	blogServer "bythen-takehome/internal/delivery/http"
+	httpServer "bythen-takehome/internal/delivery/http"
+
+	authData "bythen-takehome/internal/data/auth"
+	authHandler "bythen-takehome/internal/delivery/http/auth"
+	authService "bythen-takehome/internal/service/auth"
 
 	blogData "bythen-takehome/internal/data/blog"
 	blogHandler "bythen-takehome/internal/delivery/http/blog"
@@ -39,6 +43,10 @@ func HTTP() error {
 		log.Fatalf("[DB] Failed to open mysql connection pool: %v", err)
 	}
 
+	authD := authData.New(db)
+	authS := authService.New(authD)
+	authH := authHandler.New(authS)
+
 	blogD := blogData.New(db)
 	blogS := blogService.New(blogD)
 	blogH := blogHandler.New(blogS)
@@ -61,7 +69,8 @@ func HTTP() error {
 		}
 	})
 
-	s := blogServer.Server{
+	s := httpServer.Server{
+		Auth: authH,
 		Blog: blogH,
 	}
 
@@ -74,10 +83,9 @@ func HTTP() error {
 
 func openConnectionPool(driver string, connString string) (db *sqlx.DB, err error) {
 	const maxRetries = 10
-	const retryDelay = 2 * time.Second
+	const retryDelay = 3 * time.Second
 
 	for i := 1; i <= maxRetries; i++ {
-		fmt.Println(connString)
 		db, err = sqlx.Open(driver, connString)
 		if err == nil {
 			err = db.Ping()

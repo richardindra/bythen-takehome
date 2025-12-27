@@ -1,10 +1,11 @@
-package blog
+package auth
 
 import (
 	"bythen-takehome/internal/entity/auth"
 	"bythen-takehome/internal/entity/blog"
-	"bythen-takehome/pkg/errors"
 	"context"
+	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -23,7 +24,7 @@ func (s Service) Register(ctx context.Context, req blog.User) (blog.RespCreateUs
 
 	checkUser, err := s.data.CheckUser(ctx, req.Username, req.Email)
 	if err != nil {
-		return resp, errors.Wrap(err, "[SERVICE][CreateUser]")
+		return resp, fmt.Errorf("[SERVICE][Register]: %w", err)
 	}
 
 	if checkUser > 0 {
@@ -31,7 +32,7 @@ func (s Service) Register(ctx context.Context, req blog.User) (blog.RespCreateUs
 	} else {
 		hashedPassword, err := argon2pw.GenerateSaltedHash(req.Password)
 		if err != nil {
-			return resp, errors.Wrap(err, "[SERVICE][CreateUser][HASHING]")
+			return resp, fmt.Errorf("[SERVICE][Register][HASHING]: %w", err)
 		}
 
 		user := blog.User{
@@ -42,7 +43,7 @@ func (s Service) Register(ctx context.Context, req blog.User) (blog.RespCreateUs
 		}
 		lastID, err := s.data.CreateUser(ctx, user)
 		if err != nil {
-			return resp, errors.Wrap(err, "[SERVICE][CreateUser]")
+			return resp, fmt.Errorf("[SERVICE][Register]: %w", err)
 		}
 
 		resp = blog.RespCreateUser{
@@ -72,7 +73,7 @@ func (s Service) Login(ctx context.Context, req blog.LoginRequest) (auth.LoginRe
 
 	userCreds, err := s.data.GetUserByUsername(ctx, req.Username)
 	if err != nil {
-		return data, metadata, errors.Wrap(err, "[SERVICE][Login]")
+		return data, metadata, fmt.Errorf("[SERVICE][Login]: %w", err)
 	}
 
 	if userCreds.ID == 0 {
@@ -96,10 +97,10 @@ func (s Service) Login(ctx context.Context, req blog.LoginRequest) (auth.LoginRe
 		d := 12 * time.Hour
 		e := t.Add(d)
 
-		_ = s.data.UpdateLastLogin(ctx, req.Username)
+		lastLogin, _ := s.data.UpdateLastLogin(ctx, req.Username)
 		tokenString, err := GenerateToken(userCreds.ID, userCreds.Username, userCreds.Name, e)
 		if err != nil {
-			return data, metadata, errors.Wrap(err, "[SERVICE][Login]")
+			return data, metadata, fmt.Errorf("[SERVICE][Login]: %w", err)
 		}
 
 		data = auth.LoginResponse{
@@ -114,7 +115,7 @@ func (s Service) Login(ctx context.Context, req blog.LoginRequest) (auth.LoginRe
 			Name:        userCreds.Name,
 			Email:       userCreds.Email,
 			Status:      userCreds.Status,
-			LastLoginAt: time.Now(),
+			LastLoginAt: lastLogin,
 			CreatedAt:   userCreds.CreatedAt,
 			UpdatedAt:   userCreds.UpdatedAt,
 		}

@@ -2,11 +2,13 @@ package blog
 
 import "time"
 
-type Comments struct {
+type Blog struct {
 	ID        int64     `db:"id" json:"id"`
-	BlogID    int64     `db:"blog_id" json:"blog_id"`
-	AuthorID  int64     `db:"author_id" json:"author_id"`
+	Title     string    `db:"title" json:"title"`
 	Content   string    `db:"content" json:"content"`
+	AuthorID  int64     `db:"author_id" json:"author_id"`
+	Status    string    `db:"status" json:"status"`
+	ViewCount int       `db:"view_count" json:"view_count"`
 	CreatedAt time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
 }

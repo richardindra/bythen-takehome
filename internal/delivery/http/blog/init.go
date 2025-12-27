@@ -6,21 +6,21 @@ import (
 	"context"
 )
 
-type authSvc interface {
-	Register(ctx context.Context, user blog.User) (blog.RespCreateUser, error)
-	Login(ctx context.Context, req blog.LoginRequest) (auth.LoginResponse, blog.UserInfo, error)
+type BlogSvc interface {
+	// Blog
+	GetBlogByID(ctx context.Context, id int64) (blog.Blog, error)
 
 	GetJWTDetail(authToken string) (auth.DecodeJWT, error)
 }
 
 type (
 	Handler struct {
-		authSvc authSvc
+		blogSvc BlogSvc
 	}
 )
 
-func New(authSvc authSvc) *Handler {
+func New(bs BlogSvc) *Handler {
 	return &Handler{
-		authSvc: authSvc,
+		blogSvc: bs,
 	}
 }

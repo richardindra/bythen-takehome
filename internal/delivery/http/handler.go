@@ -18,16 +18,24 @@ func (s *Server) Handler() *mux.Router {
 	r.HandleFunc("", defaultHandler).Methods("GET")
 	r.HandleFunc("/", defaultHandler).Methods("GET")
 
-	//Auth
 	auth := r.PathPrefix("/auth").Subrouter()
-
 	auth.HandleFunc("", defaultHandler).Methods("GET")
 	auth.HandleFunc("/", defaultHandler).Methods("GET")
 
+	blog := r.PathPrefix("/blog").Subrouter()
+	blog.HandleFunc("", defaultHandler).Methods("GET")
+	blog.HandleFunc("/", defaultHandler).Methods("GET")
+
+	//Auth
 	authV1 := auth.PathPrefix("/v1").Subrouter()
 
-	authV1.HandleFunc("/register", s.Blog.Register).Methods("POST")
-	authV1.HandleFunc("/login", s.Blog.Login).Methods("POST")
+	authV1.HandleFunc("/register", s.Auth.Register).Methods("POST")
+	authV1.HandleFunc("/login", s.Auth.Login).Methods("POST")
+
+	//Blog
+	blogV1 := blog.PathPrefix("/v1").Subrouter()
+
+	blogV1.HandleFunc("/posts/{id}", s.Blog.GetBlogByID).Methods("GET")
 
 	return r
 }

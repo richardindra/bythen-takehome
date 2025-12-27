@@ -17,7 +17,7 @@ type Response struct {
 type Error struct {
 	Status bool   `json:"status"` // true if we have error
 	Msg    string `json:"msg"`    // error message
-	Code   int    `json:"code"`   // error code from application, it is not http status code
+	Code   int    `json:"code"`
 }
 
 // SetError set the response to return the given error.
@@ -33,6 +33,13 @@ func (res *Response) SetError(err error, code ...int) {
 		res.Error = Error{
 			Msg:    err.Error(),
 			Status: true,
+			Code:   code[0],
+		}
+	} else {
+		res.Error = Error{
+			Msg:    "",
+			Status: false,
+			Code:   code[0],
 		}
 	}
 

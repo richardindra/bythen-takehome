@@ -1,10 +1,12 @@
-package blog
+package auth
 
 import (
 	"bythen-takehome/internal/entity/blog"
-	"bythen-takehome/pkg/errors"
 	"context"
 	"database/sql"
+	"errors"
+	"fmt"
+	"time"
 )
 
 func (d Data) CreateUser(ctx context.Context, user blog.User) (int64, error) {
@@ -18,7 +20,8 @@ func (d Data) CreateUser(ctx context.Context, user blog.User) (int64, error) {
 		user.Password,
 	)
 	if err != nil {
-		return 0, errors.Wrap(err, "[DATA][CreateUser]")
+		return 0, fmt.Errorf("[DATA][CreateUser]: %w", err)
+
 	}
 	userID, _ = res.LastInsertId()
 
@@ -33,7 +36,7 @@ func (d Data) CheckUser(ctx context.Context, username, email string) (int, error
 
 	err = (*d.stmt)[checkUser].QueryRowxContext(ctx, username, email).Scan(&count)
 	if err != nil {
-		return count, errors.Wrap(err, "[DATA][CheckUser]")
+		return count, fmt.Errorf("[DATA][CheckUserCheckUser]: %w", err)
 	}
 
 	return count, nil
@@ -44,20 +47,27 @@ func (d Data) GetUserByUsername(ctx context.Context, username string) (blog.User
 
 	if err := (*d.stmt)[getUserByUsername].QueryRowxContext(ctx, username).StructScan(&user); err != nil {
 		if err == sql.ErrNoRows {
-			return user, errors.Wrap(errors.New("username not found"), "[DATA][GetUserByUsername]")
+			return user, fmt.Errorf("[DATA][GetUserByUsername]: %w", errors.New("username not found"))
 		}
 
-		return user, errors.Wrap(err, "[DATA][GetUserByUsername]")
+		return user, fmt.Errorf("[DATA][GetUserByUsername]: %w", err)
 	}
 
 	return user, nil
 }
 
-func (d Data) UpdateLastLogin(ctx context.Context, username string) error {
+func (d Data) UpdateLastLogin(ctx context.Context, username string) (time.Time, error) {
+	var lastLoginAt time.Time
+
 	_, err := (*d.stmt)[updateLastLogin].ExecContext(ctx, username)
 	if err != nil {
-		return errors.Wrap(err, "[DATA][UpdateLastLogin]")
+		return time.Time{}, fmt.Errorf("[DATA][UpdateLastLogin]: %w", err)
 	}
 
-	return nil
+	err = (*d.stmt)[getLastLogin].QueryRowxContext(ctx, username).Scan(&lastLoginAt)
+	if err != nil {
+		return time.Time{}, fmt.Errorf("[DATA][UpdateLastLogin]: %w", err)
+	}
+
+	return lastLoginAt, nil
 }

@@ -8,18 +8,21 @@ import (
 	"github.com/rs/cors"
 )
 
-type blogHandler interface {
+type AuthHandler interface {
 	Register(w http.ResponseWriter, r *http.Request)
 	Login(w http.ResponseWriter, r *http.Request)
 }
 
-// Server ...
-type Server struct {
-	// server  *http.Server
-	Blog blogHandler
+type BlogHandler interface {
+	//Blog
+	GetBlogByID(w http.ResponseWriter, r *http.Request)
 }
 
-// Serve is serving HTTP gracefully on port x ...
+type Server struct {
+	Auth AuthHandler
+	Blog BlogHandler
+}
+
 func (s *Server) Serve(port string) error {
 	handler := cors.AllowAll().Handler(s.Handler())
 	return grace.Serve(port, handler)

@@ -2,10 +2,14 @@ package http
 
 import (
 	"bythen-takehome/pkg/response"
+	"errors"
 	"strings"
 )
 
-// ParseErrorCode ...
+var (
+	ErrDataNotFound = errors.New("Data not found")
+)
+
 func ParseErrorCode(err string) response.Response {
 	errResp := response.Error{}
 

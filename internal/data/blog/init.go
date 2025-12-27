@@ -20,48 +20,79 @@ type (
 )
 
 const (
-	/*--- USER ---*/
-	createUser  = "CreateUser"
-	qCreateUser = `INSERT INTO blog.m_users
+	/*--- BLOG ---*/
+	createBlog  = "CreateBlog"
+	qCreateBlog = `INSERT INTO blog.m_blog_posts
 	(
-		username, 
-		name, 
-		email, 
-		password_hash, 
+		title, 
+		content, 
+		author_id, 
 		status, 
-		last_login_at, 
 		created_at, 
 		updated_at
 	) 
-	VALUES (?, ?, ?, ?, 'Y', NOW(), NOW(), NOW())`
+	VALUES (?, ?, ?, 'Y', NOW(), NOW())`
 
-	checkUser  = "CheckUser"
-	qCheckUser = `SELECT COUNT(id) FROM blog.m_users
-					WHERE username = ? OR email = ?`
+	updateViewCount  = "UpdateViewCount"
+	qUpdateViewCount = `UPDATE blog.m_blog_posts
+	SET view_count = view_count + 1
+	WHERE id = ?`
 
-	getUserByUsername  = "GetUserByUsername"
-	qGetUserByUsername = `SELECT id, username, name, email, password_hash, status, last_login_at, created_at, updated_at
-	FROM blog.m_users 
-	WHERE username = ?`
+	getBlogByID  = "GetBlogByID"
+	qGetBlogByID = `SELECT id, title, content, author_id, status, view_count, created_at, updated_at
+	FROM blog.m_blog_posts
+	WHERE id = ?`
 
-	updateLastLogin  = "UpdateLastLogin"
-	qUpdateLastLogin = `UPDATE blog.m_users
-	SET last_login_at = NOW()
-	WHERE username = ?`
+	getAllBlog  = "GetAllBlog"
+	qGetAllBlog = `SELECT id, title, content, author_id, status, view_count, created_at, updated_at
+	FROM blog.m_blog_posts
+	ORDER BY id [SORTTYPE]
+	LIMIT ? OFFSET ?`
+
+	getCountAllBlog  = "GetCountAllBlog"
+	qGetCountAllBlog = `SELECT COUNT(*) AS Count FROM blog.m_blog_posts`
+
+	getAllBlogByAuthor  = "GetAllBlogByAuthor"
+	qGetAllBlogByAuthor = `SELECT id, title, content, author_id, status, view_count, created_at, updated_at
+	FROM blog.m_blog_posts
+	WHERE author_id = ?
+	ORDER BY id [SORTTYPE]
+	LIMIT ? OFFSET ?`
+
+	getCountAllBlogByAuthor  = "GetCountAllBlogByAuthor"
+	qGetCountAllBlogByAuthor = `SELECT COUNT(*) AS Count FROM blog.m_blog_posts
+	WHERE author_id = ?`
+
+	updatePost  = "UpdatePost"
+	qUpdatePost = `UPDATE blog.m_blog_posts
+	SET title = ?, content = ?, updated_at = NOW()
+	WHERE id = ?`
+
+	deletePost  = "DeletePost"
+	qDeletePost = `DELETE FROM blog.m_blog_posts
+	WHERE id = ?`
 )
 
 var (
 	selectStmt = []statement{
-		{checkUser, qCheckUser},
-		{getUserByUsername, qGetUserByUsername},
+		/*--- BLOG ---*/
+		{getBlogByID, qGetBlogByID},
+		{getCountAllBlog, qGetCountAllBlog},
+		{getCountAllBlogByAuthor, qGetCountAllBlogByAuthor},
 	}
 	insertStmt = []statement{
-		{createUser, qCreateUser},
+		/*--- BLOG ---*/
+		{createBlog, qCreateBlog},
 	}
 	updateStmt = []statement{
-		{updateLastLogin, qUpdateLastLogin},
+		/*--- BLOG ---*/
+		{updateViewCount, qUpdateViewCount},
+		{updatePost, qUpdatePost},
 	}
-	deleteStmt = []statement{}
+	deleteStmt = []statement{
+		/*--- BLOG ---*/
+		{deletePost, qDeletePost},
+	}
 )
 
 // New ...
