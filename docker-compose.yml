@@ -1,0 +1,25 @@
+services:
+  app:
+    build: .
+    container_name: bythen-takehome-richardindra
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      DB_DSN: "root:abc123@tcp(db:3306)/appdb?parseTime=true&loc=Asia%2FJakarta"
+      APP_ENV: development
+
+  db:
+    image: mysql:8.0
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: abc123
+      MYSQL_DATABASE: appdb
+    ports:
+      - "3333:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

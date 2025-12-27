@@ -1,0 +1,4 @@
+server:
+  port: ":8080"
+database:
+   master: "root:abc123@tcp(localhost:3333)/appdb?loc=Asia%2FJakarta&parseTime=true"
