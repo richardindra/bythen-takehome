@@ -7,7 +7,7 @@ services:
     depends_on:
       - db
     environment:
-      DB_DSN: "root:abc123@tcp(db:3306)/appdb?parseTime=true&loc=Asia%2FJakarta"
+      DB_DSN: "root:abc123@tcp(db:3306)/blog?parseTime=true&loc=Asia%2FJakarta"
       APP_ENV: development
 
   db:
@@ -15,11 +15,12 @@ services:
     container_name: db
     environment:
       MYSQL_ROOT_PASSWORD: abc123
-      MYSQL_DATABASE: appdb
+      MYSQL_DATABASE: blog
     ports:
       - "3333:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
 
 volumes:
   mysql_data:

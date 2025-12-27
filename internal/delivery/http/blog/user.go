@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	var (
 		resp response.Response
 		ctx  = r.Context()
@@ -25,7 +25,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := h.authSvc.CreateUser(ctx, user)
+	res, err := h.authSvc.Register(ctx, user)
 	if err != nil {
 		resp.SetError(err, http.StatusOK)
 		ctxD["error"] = err.Error()

@@ -1,8 +1,11 @@
 package boot
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"time"
 
 	_ "github.com/lib/pq"
 
@@ -26,7 +29,12 @@ func HTTP() error {
 	}
 	cfg := config.Get()
 
-	db, err := openConnectionPool("mysql", cfg.Database.Master)
+	dsn := os.Getenv("DB_DSN")
+	if dsn == "" {
+		dsn = cfg.Database.Master
+	}
+
+	db, err := openConnectionPool("mysql", dsn)
 	if err != nil {
 		log.Fatalf("[DB] Failed to open mysql connection pool: %v", err)
 	}
@@ -65,15 +73,27 @@ func HTTP() error {
 }
 
 func openConnectionPool(driver string, connString string) (db *sqlx.DB, err error) {
-	db, err = sqlx.Open(driver, connString)
-	if err != nil {
-		return db, err
+	const maxRetries = 10
+	const retryDelay = 2 * time.Second
+
+	for i := 1; i <= maxRetries; i++ {
+		fmt.Println(connString)
+		db, err = sqlx.Open(driver, connString)
+		if err == nil {
+			err = db.Ping()
+			if err == nil {
+				log.Println("Database connected")
+				return db, nil
+			}
+		}
+
+		log.Printf(
+			"Database not ready (attempt %d/%d): %v",
+			i, maxRetries, err,
+		)
+
+		time.Sleep(retryDelay)
 	}
 
-	err = db.Ping()
-	if err != nil {
-		return db, err
-	}
-
-	return db, err
+	return nil, fmt.Errorf("failed to connect to database after %d attempts: %w", maxRetries, err)
 }

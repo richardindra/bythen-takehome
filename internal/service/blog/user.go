@@ -11,7 +11,7 @@ import (
 	"github.com/raja/argon2pw"
 )
 
-func (s Service) CreateUser(ctx context.Context, req blog.User) (blog.RespCreateUser, error) {
+func (s Service) Register(ctx context.Context, req blog.User) (blog.RespCreateUser, error) {
 	var (
 		resp blog.RespCreateUser
 	)
@@ -57,7 +57,7 @@ func (s Service) CreateUser(ctx context.Context, req blog.User) (blog.RespCreate
 }
 
 func isValidArgon2Hash(hash string) bool {
-	return strings.HasPrefix(hash, "$argon2")
+	return strings.Contains(hash, "argon2")
 }
 
 func (s Service) Login(ctx context.Context, req blog.LoginRequest) (auth.LoginResponse, blog.UserInfo, error) {
@@ -81,9 +81,9 @@ func (s Service) Login(ctx context.Context, req blog.LoginRequest) (auth.LoginRe
 		return data, metadata, errors.New("User is inactive")
 	}
 
-	//cek password argon atau bukan biar ga panic
+	//optional utk cek password argon atau bukan biar ga panic
 	if !isValidArgon2Hash(userCreds.Password) {
-		return data, metadata, errors.New("Invalid credentials")
+		return data, metadata, errors.New("Invalid argon credentials")
 	}
 
 	valid, err := argon2pw.CompareHashWithPassword(userCreds.Password, req.Password)

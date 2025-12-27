@@ -99,53 +99,96 @@ Once the prerequisites are ready:
 Push your code to a Git repository and send us the link.
 
 
+
+CREATE TABLE `m_users` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password_hash` TEXT NOT NULL,
+  `status` char(1) DEFAULT 'Y',
+  `last_login_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+CREATE TABLE `m_blog_posts` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `title` varchar(200) NOT NULL,
+  `content` text NOT NULL,
+  `author_id` bigint NOT NULL,
+  `status` char(1) DEFAULT 'Y',
+  `view_count` int NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_blog_user` (`author_id`),
+  CONSTRAINT `fk_blog_user` FOREIGN KEY (`author_id`) REFERENCES `m_users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+CREATE TABLE `m_comments` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `blog_id` bigint NOT NULL,
+  `author_id` bigint NOT NULL,
+  `content` text NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_comment_user` (`author_id`),
+  KEY `fk_comment_post` (`blog_id`),
+  CONSTRAINT `fk_comment_user` FOREIGN KEY (`author_id`) REFERENCES `m_users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_comment_post` FOREIGN KEY (`blog_id`) REFERENCES `m_blog_posts` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+////
 CREATE TABLE m_users (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    NAME VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    STATUS ENUM('active', 'inactive', 'banned') DEFAULT 'active',
-    last_login_at TIMESTAMP NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=INNODB;
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50) NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL,
+  password_hash TEXT NOT NULL,
+  status TINYINT NOT NULL DEFAULT 1,
+  last_login_at TIMESTAMP NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  UNIQUE KEY uk_users_username (username),
+  UNIQUE KEY uk_users_email (email)
+) ENGINE=InnoDB;
 
 CREATE TABLE m_blog_posts (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(200) NOT NULL,
-    slug VARCHAR(200) NOT NULL UNIQUE,
-    content TEXT NOT NULL,
-    author_id BIGINT NOT NULL,
-    STATUS ENUM('draft', 'published', 'archived') DEFAULT 'draft',
-    view_count INT DEFAULT 0,
-    published_at TIMESTAMP NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_blog_author
-        FOREIGN KEY (author_id)
-        REFERENCES m_users(id)
-        ON DELETE CASCADE
-) ENGINE=INNODB;
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(200) NOT NULL,
+  content TEXT NOT NULL,
+  author_id BIGINT NOT NULL,
+  status TINYINT NOT NULL DEFAULT 1,
+  view_count INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+  KEY idx_blog_author (author_id),
+  CONSTRAINT fk_blog_user
+    FOREIGN KEY (author_id) REFERENCES m_users(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE m_comments (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    post_id BIGINT NOT NULL,
-    author_id BIGINT NULL,
-    author_name VARCHAR(100) NOT NULL,
-    content TEXT NOT NULL,
-    is_approved BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL,
-
-    CONSTRAINT fk_comment_post
-        FOREIGN KEY (post_id)
-        REFERENCES m_blog_posts(id)
-        ON DELETE CASCADE,
-
-    CONSTRAINT fk_comment_author
-        FOREIGN KEY (author_id)
-        REFERENCES m_users(id)
-        ON DELETE SET NULL
-) ENGINE=INNODB;
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  blog_id BIGINT NOT NULL,
+  author_id BIGINT NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  
+  KEY idx_comment_blog (blog_id),
+  KEY idx_comment_author (author_id),
+  CONSTRAINT fk_comment_user
+    FOREIGN KEY (author_id) REFERENCES m_users(id)
+    ON DELETE CASCADE,
+  CONSTRAINT fk_comment_post
+    FOREIGN KEY (blog_id) REFERENCES m_blog_posts(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

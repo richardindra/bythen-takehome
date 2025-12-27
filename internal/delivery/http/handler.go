@@ -26,7 +26,7 @@ func (s *Server) Handler() *mux.Router {
 
 	authV1 := auth.PathPrefix("/v1").Subrouter()
 
-	authV1.HandleFunc("/create", s.Blog.CreateUser).Methods("POST")
+	authV1.HandleFunc("/register", s.Blog.Register).Methods("POST")
 	authV1.HandleFunc("/login", s.Blog.Login).Methods("POST")
 
 	return r

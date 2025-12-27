@@ -22,7 +22,7 @@ type (
 const (
 	/*--- USER ---*/
 	createUser  = "CreateUser"
-	qCreateUser = `INSERT INTO appdb.m_users
+	qCreateUser = `INSERT INTO blog.m_users
 	(
 		username, 
 		name, 
@@ -33,19 +33,19 @@ const (
 		created_at, 
 		updated_at
 	) 
-	VALUES (?, ?, ?, ?, 'A', NOW(), NOW(), NOW())`
+	VALUES (?, ?, ?, ?, 'Y', NOW(), NOW(), NOW())`
 
 	checkUser  = "CheckUser"
-	qCheckUser = `SELECT COUNT(id) FROM appdb.m_users
+	qCheckUser = `SELECT COUNT(id) FROM blog.m_users
 					WHERE username = ? OR email = ?`
 
 	getUserByUsername  = "GetUserByUsername"
 	qGetUserByUsername = `SELECT id, username, name, email, password_hash, status, last_login_at, created_at, updated_at
-	FROM appdb.m_users 
+	FROM blog.m_users 
 	WHERE username = ?`
 
 	updateLastLogin  = "UpdateLastLogin"
-	qUpdateLastLogin = `UPDATE appdb.m_users
+	qUpdateLastLogin = `UPDATE blog.m_users
 	SET last_login_at = NOW()
 	WHERE username = ?`
 )
