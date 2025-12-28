@@ -35,11 +35,16 @@ func (s *Server) Handler() *mux.Router {
 	//Blog
 	blogV1 := blog.PathPrefix("/v1").Subrouter()
 
+	//Post
 	blogV1.HandleFunc("/posts", s.Blog.CreateBlog).Methods("POST")
 	blogV1.HandleFunc("/posts/{id}", s.Blog.GetBlogByID).Methods("GET")
 	blogV1.HandleFunc("/posts", s.Blog.GetAllBlog).Methods("GET")
 	blogV1.HandleFunc("/posts/{id}", s.Blog.UpdatePost).Methods("PUT")
 	blogV1.HandleFunc("/posts/{id}", s.Blog.DeletePost).Methods("DELETE")
+
+	//Comment
+	blogV1.HandleFunc("/posts/{id}/comments", s.Blog.CreateComment).Methods("POST")
+	blogV1.HandleFunc("/posts/{id}/comments", s.Blog.GetAllCommentsByBlog).Methods("GET")
 
 	return r
 }

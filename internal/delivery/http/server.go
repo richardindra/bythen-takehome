@@ -20,6 +20,10 @@ type BlogHandler interface {
 	GetAllBlog(w http.ResponseWriter, r *http.Request)
 	UpdatePost(w http.ResponseWriter, r *http.Request)
 	DeletePost(w http.ResponseWriter, r *http.Request)
+
+	//Comment
+	CreateComment(w http.ResponseWriter, r *http.Request)
+	GetAllCommentsByBlog(w http.ResponseWriter, r *http.Request)
 }
 
 type Server struct {

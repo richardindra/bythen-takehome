@@ -39,24 +39,36 @@ const (
 	WHERE id = ?`
 
 	getBlogByID  = "GetBlogByID"
-	qGetBlogByID = `SELECT id, title, content, author_id, status, view_count, created_at, updated_at
-	FROM blog.m_blog_posts
-	WHERE id = ?`
+	qGetBlogByID = `SELECT bp.id, bp.title, bp.content, bp.author_id, bp.status, bp.view_count, bp.created_at, bp.updated_at,
+	IFNULL(usr.username, '') AS username, 
+	IFNULL(usr.name, '') AS name
+	FROM blog.m_blog_posts bp
+	LEFT JOIN blog.m_users usr
+	ON bp.author_id = usr.id
+	WHERE bp.id = ?`
 
 	getAllBlog  = "GetAllBlog"
-	qGetAllBlog = `SELECT id, title, content, author_id, status, view_count, created_at, updated_at
-	FROM blog.m_blog_posts
-	ORDER BY id [SORTTYPE]
+	qGetAllBlog = `SELECT bp.id, bp.title, bp.content, bp.author_id, bp.status, bp.view_count, bp.created_at, bp.updated_at,
+	IFNULL(usr.username, '') AS username, 
+	IFNULL(usr.name, '') AS name
+	FROM blog.m_blog_posts bp
+	LEFT JOIN blog.m_users usr
+	ON bp.author_id = usr.id
+	ORDER BY bp.id [SORTTYPE]
 	LIMIT ? OFFSET ?`
 
 	getCountAllBlog  = "GetCountAllBlog"
 	qGetCountAllBlog = `SELECT COUNT(*) AS Count FROM blog.m_blog_posts`
 
 	getAllBlogByAuthor  = "GetAllBlogByAuthor"
-	qGetAllBlogByAuthor = `SELECT id, title, content, author_id, status, view_count, created_at, updated_at
-	FROM blog.m_blog_posts
-	WHERE author_id = ?
-	ORDER BY id [SORTTYPE]
+	qGetAllBlogByAuthor = `SELECT bp.id, bp.title, bp.content, bp.author_id, bp.status, bp.view_count, bp.created_at, bp.updated_at,
+	IFNULL(usr.username, '') AS username, 
+	IFNULL(usr.name, '') AS name
+	FROM blog.m_blog_posts bp
+	LEFT JOIN blog.m_users usr
+	ON bp.author_id = usr.id
+	WHERE bp.author_id = ?
+	ORDER BY bp.id [SORTTYPE]
 	LIMIT ? OFFSET ?`
 
 	getCountAllBlogByAuthor  = "GetCountAllBlogByAuthor"
@@ -71,6 +83,42 @@ const (
 	deletePost  = "DeletePost"
 	qDeletePost = `DELETE FROM blog.m_blog_posts
 	WHERE id = ?`
+
+	/*--- COMMENTS ---*/
+	createComment  = "CreateComment"
+	qCreateComment = `INSERT INTO blog.m_comments
+	(
+		blog_id,
+		author_id,
+		content,
+		created_at,
+		updated_at
+	) 
+	VALUES (?, ?, ?, NOW(), NOW())`
+
+	getCommentByID  = "GetCommentByID"
+	qGetCommentByID = `SELECT cmt.id, cmt.blog_id, cmt.author_id, cmt.content, cmt.created_at, cmt.updated_at,
+	IFNULL(usr.username, '') AS username, 
+	IFNULL(usr.name, '') AS name
+	FROM blog.m_comments cmt
+	LEFT JOIN blog.m_users usr
+	ON cmt.author_id = usr.id
+	WHERE cmt.id = ?`
+
+	getAllCommentsByBlog  = "GetAllCommentsByBlog"
+	qGetAllCommentsByBlog = `SELECT cmt.id, cmt.blog_id, cmt.author_id, cmt.content, cmt.created_at, cmt.updated_at,
+	IFNULL(usr.username, '') AS username, 
+	IFNULL(usr.name, '') AS name
+	FROM blog.m_comments cmt
+	LEFT JOIN blog.m_users usr
+	ON cmt.author_id = usr.id
+	WHERE cmt.blog_id = ?
+	ORDER BY cmt.id [SORTTYPE]
+	LIMIT ? OFFSET ?`
+
+	getCountAllCommentsByBlog  = "GetCountAllCommentsByBlog"
+	qGetCountAllCommentsByBlog = `SELECT COUNT(*) AS Count FROM blog.m_comments
+	WHERE blog_id = ?`
 )
 
 var (
@@ -79,10 +127,17 @@ var (
 		{getBlogByID, qGetBlogByID},
 		{getCountAllBlog, qGetCountAllBlog},
 		{getCountAllBlogByAuthor, qGetCountAllBlogByAuthor},
+
+		/*--- COMMENTS ---*/
+		{getCommentByID, qGetCommentByID},
+		{getCountAllCommentsByBlog, qGetCountAllCommentsByBlog},
 	}
 	insertStmt = []statement{
 		/*--- BLOG ---*/
 		{createBlog, qCreateBlog},
+		
+		/*--- COMMENTS ---*/
+		{createComment, qCreateComment},
 	}
 	updateStmt = []statement{
 		/*--- BLOG ---*/

@@ -9,4 +9,6 @@ type Comments struct {
 	Content   string    `db:"content" json:"content"`
 	CreatedAt time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
+	Username  string    `db:"username" json:"username"`
+	Name      string    `db:"name" json:"name"`
 }

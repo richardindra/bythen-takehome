@@ -19,6 +19,12 @@ type Data interface {
 	GetCountAllBlogByAuthor(ctx context.Context, author int64) (int, error)
 	UpdatePost(ctx context.Context, id int64, body blog.Blog) error
 	DeletePost(ctx context.Context, id int64) error
+
+	// Comment
+	CreateComment(ctx context.Context, blog blog.Comments) (int64, error)
+	GetCommentByID(ctx context.Context, id int64) (blog.Comments, error)
+	GetAllCommentsByBlog(ctx context.Context, blogID int64, sortType string, limit int, offset int) ([]blog.Comments, error)
+	GetCountAllCommentsByBlog(ctx context.Context, blogID int64) (int, error)
 }
 
 type Service struct {

@@ -19,7 +19,7 @@ func (d Data) CreateBlog(ctx context.Context, blog blog.Blog) (int64, error) {
 		blog.AuthorID,
 	)
 	if err != nil {
-		return 0, fmt.Errorf("[DATA][CreateBlogCreateBlog]: %w", err)
+		return 0, fmt.Errorf("[DATA][CreateBlog]: %w", err)
 	}
 	blogID, _ = res.LastInsertId()
 
