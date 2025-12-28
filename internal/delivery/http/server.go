@@ -15,7 +15,11 @@ type AuthHandler interface {
 
 type BlogHandler interface {
 	//Blog
+	CreateBlog(w http.ResponseWriter, r *http.Request)
 	GetBlogByID(w http.ResponseWriter, r *http.Request)
+	GetAllBlog(w http.ResponseWriter, r *http.Request)
+	UpdatePost(w http.ResponseWriter, r *http.Request)
+	DeletePost(w http.ResponseWriter, r *http.Request)
 }
 
 type Server struct {
