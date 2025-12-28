@@ -36,7 +36,7 @@ func (d Data) CheckUser(ctx context.Context, username, email string) (int, error
 
 	err = (*d.stmt)[checkUser].QueryRowxContext(ctx, username, email).Scan(&count)
 	if err != nil {
-		return count, fmt.Errorf("[DATA][CheckUserCheckUser]: %w", err)
+		return count, fmt.Errorf("[DATA][CheckUser]: %w", err)
 	}
 
 	return count, nil
@@ -47,7 +47,7 @@ func (d Data) GetUserByUsername(ctx context.Context, username string) (blog.User
 
 	if err := (*d.stmt)[getUserByUsername].QueryRowxContext(ctx, username).StructScan(&user); err != nil {
 		if err == sql.ErrNoRows {
-			return user, fmt.Errorf("[DATA][GetUserByUsername]: %w", errors.New("username not found"))
+			return user, fmt.Errorf("[DATA][GetUserByUsername]: %w", errors.New("Username not found"))
 		}
 
 		return user, fmt.Errorf("[DATA][GetUserByUsername]: %w", err)

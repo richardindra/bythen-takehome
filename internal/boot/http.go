@@ -103,5 +103,5 @@ func openConnectionPool(driver string, connString string) (db *sqlx.DB, err erro
 		time.Sleep(retryDelay)
 	}
 
-	return nil, fmt.Errorf("failed to connect to database after %d attempts: %w", maxRetries, err)
+	return nil, fmt.Errorf("Failed to connect to database after %d attempts: %w", maxRetries, err)
 }

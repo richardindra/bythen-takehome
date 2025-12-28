@@ -20,6 +20,7 @@ func (s Service) CreateComment(ctx context.Context, req blog.Comments, _token st
 		return data, httpHelper.ErrTokenExpired
 	}
 
+	req.AuthorID = tokenDetail.UserID
 	commentID, err := s.data.CreateComment(ctx, req)
 	if err != nil {
 		return data, fmt.Errorf("[SERVICE][CreateComment]: %w", err)

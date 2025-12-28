@@ -20,6 +20,7 @@ func (s Service) CreateBlog(ctx context.Context, req blog.Blog, _token string) (
 		return data, httpHelper.ErrTokenExpired
 	}
 
+	req.AuthorID = tokenDetail.UserID
 	blogID, err := s.data.CreateBlog(ctx, req)
 	if err != nil {
 		return data, fmt.Errorf("[SERVICE][CreateBlog]: %w", err)
@@ -158,6 +159,15 @@ func (s Service) UpdatePost(ctx context.Context, body blog.Blog, _token string) 
 		return data, httpHelper.ErrTokenExpired
 	}
 
+	temp, err := s.data.GetBlogByID(ctx, body.ID)
+	if err != nil {
+		return data, fmt.Errorf("[SERVICE][UpdatePost]: %w", err)
+	}
+
+	if temp.AuthorID != tokenDetail.UserID {
+		return data, httpHelper.ErrUnauthorized
+	}
+
 	err = s.data.UpdatePost(ctx, body)
 	if err != nil {
 		return data, fmt.Errorf("[SERVICE][UpdatePost]: %w", err)
@@ -179,6 +189,15 @@ func (s Service) DeletePost(ctx context.Context, id int64, _token string) error 
 
 	if time.Now().Unix() > tokenDetail.ExpireIn {
 		return httpHelper.ErrTokenExpired
+	}
+
+	temp, err := s.data.GetBlogByID(ctx, id)
+	if err != nil {
+		return fmt.Errorf("[SERVICE][DeletePost]: %w", err)
+	}
+
+	if temp.AuthorID != tokenDetail.UserID {
+		return httpHelper.ErrUnauthorized
 	}
 
 	err = s.data.DeletePost(ctx, id)

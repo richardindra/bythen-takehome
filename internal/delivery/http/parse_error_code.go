@@ -9,6 +9,7 @@ import (
 var (
 	ErrDataNotFound = errors.New("Data not found")
 	ErrTokenExpired = errors.New("Token is expired")
+	ErrUnauthorized = errors.New("Unauthorized user")
 )
 
 func ParseErrorCode(err string) response.Response {
