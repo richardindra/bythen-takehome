@@ -165,7 +165,7 @@ func (s Service) UpdatePost(ctx context.Context, body blog.Blog, _token string) 
 	}
 
 	if temp.AuthorID != tokenDetail.UserID {
-		return data, httpHelper.ErrUnauthorized
+		return data, httpHelper.ErrForbiddenUser
 	}
 
 	err = s.data.UpdatePost(ctx, body)
@@ -197,7 +197,7 @@ func (s Service) DeletePost(ctx context.Context, id int64, _token string) error 
 	}
 
 	if temp.AuthorID != tokenDetail.UserID {
-		return httpHelper.ErrUnauthorized
+		return httpHelper.ErrForbiddenUser
 	}
 
 	err = s.data.DeletePost(ctx, id)

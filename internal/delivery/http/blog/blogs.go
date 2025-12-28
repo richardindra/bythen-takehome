@@ -159,8 +159,8 @@ func (h *Handler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case errors.Is(err, httpHelper.ErrTokenExpired):
 		handleError(w, r, err, http.StatusUnauthorized)
-	case errors.Is(err, httpHelper.ErrUnauthorized):
-		handleError(w, r, err, http.StatusUnauthorized)
+	case errors.Is(err, httpHelper.ErrForbiddenUser):
+		handleError(w, r, err, http.StatusForbidden)
 	case err != nil:
 		handleError(w, r, err, http.StatusInternalServerError)
 	default:
@@ -191,8 +191,8 @@ func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case errors.Is(err, httpHelper.ErrTokenExpired):
 		handleError(w, r, err, http.StatusUnauthorized)
-	case errors.Is(err, httpHelper.ErrUnauthorized):
-		handleError(w, r, err, http.StatusUnauthorized)
+	case errors.Is(err, httpHelper.ErrForbiddenUser):
+		handleError(w, r, err, http.StatusForbidden)
 	case err != nil:
 		handleError(w, r, err, http.StatusInternalServerError)
 	default:
