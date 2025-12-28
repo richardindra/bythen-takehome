@@ -145,7 +145,7 @@ func (s Service) GetAllBlogByAuthor(ctx context.Context, authorID int64, sortTyp
 	return resp, metadata, nil
 }
 
-func (s Service) UpdatePost(ctx context.Context, id int64, body blog.Blog, _token string) (blog.Blog, error) {
+func (s Service) UpdatePost(ctx context.Context, body blog.Blog, _token string) (blog.Blog, error) {
 	var (
 		data blog.Blog
 	)
@@ -158,12 +158,12 @@ func (s Service) UpdatePost(ctx context.Context, id int64, body blog.Blog, _toke
 		return data, httpHelper.ErrTokenExpired
 	}
 
-	err = s.data.UpdatePost(ctx, id, body)
+	err = s.data.UpdatePost(ctx, body)
 	if err != nil {
 		return data, fmt.Errorf("[SERVICE][UpdatePost]: %w", err)
 	}
 
-	data, err = s.data.GetBlogByID(ctx, id)
+	data, err = s.data.GetBlogByID(ctx, body.ID)
 	if err != nil {
 		return data, fmt.Errorf("[SERVICE][UpdatePost]: %w", err)
 	}

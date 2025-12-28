@@ -154,7 +154,8 @@ func (h *Handler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := h.blogSvc.UpdatePost(ctx, id, req, token)
+	req.ID = id
+	res, err := h.blogSvc.UpdatePost(ctx, req, token)
 	switch {
 	case errors.Is(err, httpHelper.ErrTokenExpired):
 		handleError(w, r, err, http.StatusUnauthorized)

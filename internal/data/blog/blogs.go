@@ -147,12 +147,12 @@ func (d Data) GetCountAllBlogByAuthor(ctx context.Context, author int64) (int, e
 	return total, err
 }
 
-func (d Data) UpdatePost(ctx context.Context, id int64, body blog.Blog) error {
+func (d Data) UpdatePost(ctx context.Context, body blog.Blog) error {
 	var (
 		err error
 	)
 
-	_, err = (*d.stmt)[updatePost].ExecContext(ctx, body.Title, body.Content, id)
+	_, err = (*d.stmt)[updatePost].ExecContext(ctx, body.Title, body.Content, body.ID)
 	if err != nil {
 		return fmt.Errorf("[DATA][UpdatePost]: %w", err)
 	}

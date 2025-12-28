@@ -17,7 +17,7 @@ type Data interface {
 	GetCountAllBlog(ctx context.Context) (int, error)
 	GetAllBlogByAuthor(ctx context.Context, author int64, sortType string, limit int, offset int) ([]blog.Blog, error)
 	GetCountAllBlogByAuthor(ctx context.Context, author int64) (int, error)
-	UpdatePost(ctx context.Context, id int64, body blog.Blog) error
+	UpdatePost(ctx context.Context, body blog.Blog) error
 	DeletePost(ctx context.Context, id int64) error
 
 	// Comment

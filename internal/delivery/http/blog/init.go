@@ -16,7 +16,7 @@ type BlogSvc interface {
 	GetBlogByID(ctx context.Context, id int64, _token string) (blog.Blog, error)
 	GetAllBlog(ctx context.Context, sortType string, page int, limit int, _token string) ([]blog.Blog, interface{}, error)
 	GetAllBlogByAuthor(ctx context.Context, authorID int64, sortType string, page int, limit int, _token string) ([]blog.Blog, interface{}, error)
-	UpdatePost(ctx context.Context, id int64, body blog.Blog, _token string) (blog.Blog, error)
+	UpdatePost(ctx context.Context, body blog.Blog, _token string) (blog.Blog, error)
 	DeletePost(ctx context.Context, id int64, _token string) error
 
 	// Commeny
