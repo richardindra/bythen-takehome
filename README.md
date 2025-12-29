@@ -74,7 +74,3 @@ docker-compose up
 ```
 
 The server will be up and running at http://localhost:8080.
-
-## Submission Instructions
-
-Push your code to a Git repository and send us the link.
